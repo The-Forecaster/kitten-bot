@@ -1,29 +1,25 @@
-const { Client, GatewayIntentBits, WebhookClient, EmbedBuilder } = require('discord.js');
-const { token, webhook } = require('./config.json');
-const webhookClient = new WebhookClient({ url: webhook })
+/** 
+ * Author Austin the Forecaster
+ * Since 8/28/22
+ */
 
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+// Global variables
+const { Client, GatewayIntentBits, Events, SlashCommandBuilder } = require('discord.js')
+const { token } = require('./config.json')
+const client = new Client({ intents: [GatewayIntentBits.Guilds] })
 
-const embed = new EmbedBuilder().setTitle('Kitten Bot').setColor(0x00FFFF);
-
-
-client.once('ready', async () => {
-    const channel = client.channels.cache.get(webhookClient.token);
-    try {
-        const webhook = channel.fetchWebhooks().find(wh => wh.token);
-
-        if (!webhook) {
-            return console.log('No webhook was found that I can use!');
-        }
-
-        await webhook.send({
-            content: 'Webhook test',
-            username: 'kitten-bot',
-            embeds: [embed],
-        });
-    } catch (error) {
-        console.error('Error trying to send a message: ', error);
+// Define Slash commands here
+module.exports = {
+    data: 
+    new SlashCommandBuilder().setName('ping').setDescription('Replies with Pong!'),
+    async execute(interaction) {
+        await interaction.reply('Pong')
     }
-});
+}
 
-client.login(token);
+// Run commands
+client.once(Events.ClientReady, async (client) => {
+    console.log('Logged in as ' + client.user.tag + '!')
+})
+
+client.login(token)
